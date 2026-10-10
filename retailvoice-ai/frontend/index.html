@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RetailVoice AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- ============ HOME ============ -->
+  <section class="view active" id="view-home">
+    <div class="topbar">
+      <div class="shop-mark" id="shopMarkTop">🏬</div>
+      <div><h2 id="shopNameTop">Green Mart</h2><small>Fresh · Grocery · Daily needs</small></div>
+      <button class="gear" id="settingsBtn">⚙️</button>
+    </div>
+    <main>
+      <div class="card" style="text-align:center;">
+        <div class="mic-wrap"><button class="mic" id="goVoiceBtn">🎙️</button></div>
+        <div class="mic-hint">Tap to speak</div>
+      </div>
+      <div class="icon-grid">
+        <div class="icon-card" id="quickVoice"><div class="em">🧾</div><div class="lbl">Voice Bill</div><div class="sub">Create with voice</div></div>
+        <div class="icon-card" id="quickBills"><div class="em">📄</div><div class="lbl">Bill</div><div class="sub">View all bills</div></div>
+        <div class="icon-card" id="quickReport"><div class="em">📊</div><div class="lbl">Daily Report</div><div class="sub">Sales & profit</div></div>
+      </div>
+      <div class="card" style="margin-top:12px;">
+        <h3 style="font-size:14px;margin-bottom:4px;">Today's Summary</h3>
+        <div class="summary-row">
+          <div class="box"><b id="sumSales">₹0</b><span>Total Sales</span></div>
+          <div class="box"><b id="sumBills">0</b><span>Total Bills</span></div>
+          <div class="box"><b id="sumProfit">₹0</b><span>Profit</span></div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section class="view" id="view-settings">
+    <div class="subhead"><button class="back" data-back="home">←</button><h2>Settings</h2></div>
+    <main>
+      <div class="card" style="text-align:center;">
+        <div class="store-photo" id="storePhotoPreview" style="margin:0 auto 10px;">🏬</div>
+        <input type="file" id="storePhotoInput" accept="image/*" style="display:none;">
+        <button class="btn btn-outline" id="storePhotoBtn">Change photo</button>
+      </div>
+      <div class="card">
+        <div class="field"><label>Vendor name</label><input type="text" id="vendorNameInput" value="Mohan Kumar"></div>
+        <div class="field"><label>Store name</label><input type="text" id="storeNameInput" value="Green Mart"></div>
+        <div class="field"><label>Location / Address</label><input type="text" id="storeAddrInput" value="123, Market Street, Coimbatore - 641001, Tamil Nadu"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:14px;margin-bottom:8px;">Store Details</h3>
+        <div class="field"><label>GST number</label><input type="text" id="storeGstInput" value="33ABCDE1234F1Z5"></div>
+        <div class="field"><label>Phone number</label><input type="text" id="storePhoneInput" value="+91 98765 43210"></div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <h3 style="font-size:14px;margin-bottom:8px;">UPI QR code (for online payments)</h3>
+        <div id="qrPreviewWrap" style="margin-bottom:10px;">
+          <img id="qrPreviewImg" style="display:none;max-width:160px;border-radius:12px;border:1px solid var(--line);">
+          <div id="qrPreviewEmpty" class="empty" style="padding:8px 0;">No QR uploaded yet</div>
+        </div>
+        <input type="file" id="qrPhotoInput" accept="image/*" style="display:none;">
+        <button class="btn btn-outline" id="qrPhotoBtn">Upload UPI QR image</button>
+      </div>
+      <button class="btn btn-primary" id="saveStoreBtn">Save Changes</button>
+      <div class="card" style="margin-top:12px;">
+        <h3 style="font-size:14px;margin-bottom:6px;">Backup &amp; Restore</h3>
+        <div class="receipt-meta" style="text-align:left;margin-bottom:10px;">This app saves data only in this browser. Download a backup regularly, and always open the app from the same link — a different link/copy has separate data.</div>
+        <button class="btn btn-outline" id="downloadBackupBtn" style="margin-bottom:8px;">⬇ Download Backup</button>
+        <input type="file" id="restoreBackupInput" accept="application/json" style="display:none;">
+        <button class="btn btn-outline" id="restoreBackupBtn">⬆ Restore from Backup</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ VOICE BILLING ============ -->
+  <section class="view" id="view-voice">
+    <div class="subhead"><button class="back" data-back="home">←</button><h2>Voice Billing</h2></div>
+    <main>
+      <div class="card"><div class="lang-row" id="langRow"></div></div>
+      <div class="card" style="text-align:center;">
+        <div class="mic-wrap"><button class="mic" id="micBtn">🎙️</button></div>
+        <div id="listeningLabel" class="mic-hint">Tap to speak</div>
+        <div class="row" style="border:none;justify-content:center;color:var(--sub);font-size:12px;padding-top:10px;" id="transcriptBox">Example: "ஒரு கிலோ தக்காளி, ரெண்டு கிலோ வெங்காயம்"</div>
+      </div>
+      <div class="card">
+        <label style="font-size:12px;color:var(--sub);display:block;margin-bottom:6px;">Or type / paste the order (works even if mic doesn't)</label>
+        <input type="text" id="typedOrderInput" placeholder="ஒரு கிலோ தக்காளி, அரை லிட்டர் பால்" style="width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:13px;margin-bottom:8px;">
+        <button class="btn btn-outline" id="typedOrderBtn">Add these items</button>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <h3 style="font-size:15px;">Items (<span id="itemCount">0</span>)</h3>
+          <button class="btn-ghost" id="addManualBtn">+ Add manually</button>
+        </div>
+        <div id="itemsList"><div class="empty">Say an order, or add an item manually.</div></div>
+        <div class="total-bar"><span style="color:var(--sub);font-size:13px;">Total</span><span class="amt" id="voiceTotal">₹0</span></div>
+        <button class="btn btn-primary" id="confirmBillBtn">Confirm &amp; generate bill</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ MANUAL ADD (menu grid) ============ -->
+  <section class="view" id="view-manualadd">
+    <div class="subhead"><button class="back" data-back="voice">←</button><h2>Add Manually</h2></div>
+    <main>
+      <h3 style="font-size:13px;color:var(--sub);margin-bottom:8px;">Menu — tap to add</h3>
+      <div class="menu-grid" id="menuGrid"></div>
+      <div class="card" style="margin-top:14px;">
+        <h3 style="font-size:15px;margin-bottom:6px;">Current Bill (<span id="manualCount">0</span>)</h3>
+        <div id="manualCartList"><div class="empty">Tap a product above to add it.</div></div>
+        <div class="total-bar"><span style="color:var(--sub);font-size:13px;">Total</span><span class="amt" id="manualTotal">₹0</span></div>
+        <button class="btn btn-primary" id="manualGenerateBtn">Generate Bill</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ BILL (receipt) ============ -->
+  <section class="view" id="view-bill">
+    <div class="subhead no-print"><button class="back" data-back="home">←</button><h2>Bill</h2></div>
+    <main>
+      <div class="card receipt">
+        <div class="receipt-photo" id="receiptPhoto">🏬</div>
+        <h2 class="receipt-store" id="billShopName">Green Mart</h2>
+        <div class="receipt-meta" id="billAddr">Address</div>
+        <div class="receipt-meta" id="billGstLine">GSTIN: -</div>
+        <div class="receipt-meta" id="billMeta">Bill #1 · today</div>
+        <div class="dashed"></div>
+        <div class="receipt-cols4"><span>Name</span><span>Qty</span><span>GST</span><span>Amount</span></div>
+        <div id="billItemsTable"></div>
+        <div class="dashed"></div>
+        <div class="receipt-gsttot"><span>Subtotal (no GST)</span><span id="billSubtotal">₹0</span></div>
+        <div class="receipt-gsttot"><span>GST Total</span><span id="billGstTotal">₹0</span></div>
+        <div class="receipt-total"><span>Grand Total</span><span id="billTotalAmt">₹0</span></div>
+        <div class="receipt-thanks">Thank you!<br>Visit again</div>
+      </div>
+
+      <div class="card no-print" id="paymentChoiceCard" style="display:none;text-align:center;">
+        <h3 style="font-size:14px;margin-bottom:10px;">How is the customer paying?</h3>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-outline" id="payCashBtn" style="flex:1;">💵 Cash</button>
+          <button class="btn btn-primary" id="payQrBtn" style="flex:1;">📱 Pay (QR)</button>
+        </div>
+      </div>
+
+      <div class="card no-print" id="qrPayCard" style="display:none;text-align:center;">
+        <h3 style="font-size:16px;margin-bottom:6px;">Scan to Pay</h3>
+        <div class="amt" style="font-size:24px;color:var(--orange,var(--pri));margin-bottom:12px;" id="qrPayAmt">₹0</div>
+        <img id="qrPayImg" style="display:none;max-width:200px;border-radius:12px;border:1px solid var(--line);margin:0 auto 10px;">
+        <div id="qrPayEmpty" class="empty" style="display:none;">No UPI QR uploaded yet — add one in Settings.</div>
+        <div class="receipt-meta" style="margin-bottom:12px;">Customer scans with any UPI app. Amount shown above.</div>
+        <button class="btn btn-primary" id="qrPaymentReceivedBtn" style="margin-bottom:8px;">Payment Received</button>
+        <button class="btn-ghost" id="qrCancelBtn">← Back</button>
+      </div>
+
+      <div class="card no-print" id="billActionsCard" style="display:none;">
+        <button class="btn wa-btn" style="background:#25A159;color:#fff;width:100%;margin-bottom:8px;" id="shareWaBtn">Share on WhatsApp</button>
+        <button class="btn btn-outline" id="downloadPdfBtn">Download / Print as PDF</button>
+        <button class="btn-ghost" id="viewAllBillsBtn" style="display:block;text-align:center;width:100%;margin-top:14px;">View all bills</button>
+        <button class="btn-ghost" id="newBillBtn" style="display:block;text-align:center;width:100%;margin-top:10px;">+ Start new bill</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ ALL BILLS ============ -->
+  <section class="view" id="view-allbills">
+    <div class="subhead"><button class="back" data-back="home">←</button><h2>All Bills</h2></div>
+    <main>
+      <div class="card"><div id="allBillsList"></div></div>
+      <button class="btn btn-outline" id="clearBillsBtn">🗑 Clear Bill History</button>
+    </main>
+  </section>
+
+  <!-- ============ STOCK & REPORTS HUB ============ -->
+  <section class="view" id="view-stockhub">
+    <div class="subhead"><button class="back" data-back="home">←</button><h2>Stock &amp; Reports</h2></div>
+    <main>
+      <div class="icon-grid two">
+        <div class="icon-card" id="openStockDetails"><div class="em">📦</div><div class="lbl">Stock Details</div></div>
+        <div class="icon-card" id="openReports"><div class="em">📈</div><div class="lbl">Reports</div></div>
+      </div>
+      <div class="card" style="margin-top:12px;">
+        <h3 style="font-size:14px;margin-bottom:6px;">Stock Summary</h3>
+        <div class="row"><span>Total Products</span><b id="stTotalProducts">0</b></div>
+        <div class="row"><span>Low Stock Items</span><b id="stLowCount" style="color:var(--warn);">0</b></div>
+        <div class="row"><span>Out of Stock</span><b id="stOutCount" style="color:var(--danger);">0</b></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:14px;margin-bottom:6px;">Low Stock Alert</h3>
+        <div id="lowStockAlertList"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ STOCK DETAILS ============ -->
+  <section class="view" id="view-stockdetails">
+    <div class="subhead"><button class="back" data-back="stockhub">←</button><h2>Stock Details</h2></div>
+    <main>
+      <div class="card">
+        <div class="tabs" id="stockTabs">
+          <button class="active" data-tab="current">Current Stock</button>
+          <button data-tab="low">Low Stock</button>
+          <button data-tab="out">Out of Stock</button>
+        </div>
+        <table><thead><tr><th></th><th>Product</th><th>Stock</th></tr></thead><tbody id="stockTableBody"></tbody></table>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ REPORTS ============ -->
+  <section class="view" id="view-reports">
+    <div class="subhead"><button class="back" data-back="stockhub">←</button><h2>Reports</h2></div>
+    <main>
+      <div class="card">
+        <div class="tabs" id="reportTabs"><button class="active" data-tab="daily">Daily Report</button><button data-tab="weekly">Weekly Report</button></div>
+        <div id="dailyReportPane">
+          <div class="field"><label>Choose date</label><input type="date" id="dailyDateInput"></div>
+          <div class="summary-row"><div class="box"><b id="dTotalSales">₹0</b><span>Total Sales</span></div><div class="box"><b id="dTotalBills">0</b><span>Total Bills</span></div><div class="box"><b id="dProfit">₹0</b><span>Profit</span></div></div>
+          <h3 style="font-size:13px;margin:16px 0 2px;">Product-wise Sales</h3>
+          <div id="dailyProductWiseList"></div>
+        </div>
+        <div id="weeklyReportPane" style="display:none;">
+          <div class="field"><label>Choose any date in the week</label><input type="date" id="weeklyDateInput"></div>
+          <div class="receipt-meta" id="weekRangeLabel" style="text-align:left;margin-bottom:8px;"></div>
+          <div class="summary-row"><div class="box"><b id="wTotalSales">₹0</b><span>Total Sales</span></div><div class="box"><b id="wTotalBills">0</b><span>Total Bills</span></div><div class="box"><b id="wProfit">₹0</b><span>Profit</span></div></div>
+          <h3 style="font-size:13px;margin:14px 0 2px;">Sales Overview (Mon–Sun)</h3>
+          <div class="bar-chart" id="weekBarChart"></div>
+          <h3 style="font-size:13px;margin:16px 0 2px;">Product-wise Sales</h3>
+          <div id="productWiseList"></div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ PRODUCTS ============ -->
+  <section class="view" id="view-products">
+    <div class="subhead"><button class="back" data-back="home">←</button><h2>Product Management</h2></div>
+    <main>
+      <div class="card">
+        <div id="prodSearchWrap" style="margin-bottom:10px;">
+          <input type="text" id="prodSearchInput" placeholder="Search product name..." style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:13px;">
+        </div>
+        <div class="tabs" id="prodTabs"><button class="active" data-tab="all">All Products</button><button data-tab="add">Add Product</button><button data-tab="update">Update Price</button></div>
+
+        <div id="prodAllPane"><div id="prodList"></div></div>
+
+        <div id="prodAddPane" style="display:none;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div class="store-photo" id="newPhotoPreview" style="width:56px;height:56px;">🛒</div>
+            <div>
+              <input type="file" id="newPhotoInput" accept="image/*" style="display:none;">
+              <button class="btn btn-outline" id="newPhotoBtn" type="button" style="padding:8px 12px;font-size:12px;">Add product photo</button>
+              <div class="receipt-meta" style="text-align:left;margin-top:4px;">Optional — choose a file, or copy an image and paste (Ctrl+V) anywhere on this tab</div>
+            </div>
+          </div>
+          <div class="field"><label>Item name (generic, e.g. Soap)</label><input type="text" id="newName"></div>
+          <div class="field"><label>Brand name (optional, e.g. Vimbar Soap)</label><input type="text" id="newBrand"></div>
+          <div style="display:flex;gap:8px;">
+            <div class="field" style="flex:1;"><label>Unit</label>
+              <select id="newUnit">
+                <option value="kilogram">Kilogram (கிலோ)</option>
+                <option value="gram">Gram (கிராம்)</option>
+                <option value="litre">Litre (லிட்டர்)</option>
+                <option value="millilitre">Millilitre (மில்லி)</option>
+                <option value="piece">Piece (பீஸ்)</option>
+                <option value="dozen">Dozen (டசன்)</option>
+                <option value="bundle">Bundle (கட்டு)</option>
+                <option value="bunch">Bunch (கொத்து)</option>
+                <option value="packet">Packet (பாக்கெட்)</option>
+                <option value="box">Box (பெட்டி)</option>
+                <option value="bottle">Bottle (பாட்டில்)</option>
+                <option value="tin">Tin (டின்)</option>
+                <option value="bag">Bag (பை)</option>
+                <option value="can">Can (டப்பா)</option>
+                <option value="sack">Sack (சிப்பம்)</option>
+              </select>
+            </div>
+            <div class="field" style="flex:1;"><label>GST %</label><input type="number" id="newGst" value="5"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <div class="field" style="flex:1;"><label>Purchased qty (total)</label><input type="number" id="newCostQty" placeholder="e.g. 15"></div>
+            <div class="field" style="flex:1;"><label>Total purchase price ₹</label><input type="number" id="newCostTotal" placeholder="e.g. 2000"></div>
+          </div>
+          <div class="field"><label>Selling price per unit ₹</label><input type="number" id="newSellPrice"></div>
+          <div style="display:flex;gap:8px;">
+            <div class="field" style="flex:1;"><label>Tanglish name(s)</label><input type="text" id="newTanglish" placeholder="thakkali, thakkaali"></div>
+            <div class="field" style="flex:1;"><label>Tamil name(s)</label><input type="text" id="newTa" placeholder="தக்காளி"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <div class="field" style="flex:1;"><label>Hindi name(s)</label><input type="text" id="newHi"></div>
+            <div class="field" style="flex:1;"><label>Kannada name(s)</label><input type="text" id="newKn"></div>
+          </div>
+          <div class="receipt-meta" style="text-align:left;margin:-4px 0 10px;">Type a comma to add more than one spelling/slang for the same item.</div>
+          <button class="btn btn-primary" id="addProductBtn">Add to inventory</button>
+        </div>
+
+        <div id="prodUpdatePane" style="display:none;"><div id="prodUpdateList"></div></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ CREDIT (KADAN) ============ -->
+  <section class="view" id="view-credit">
+    <div class="subhead"><button class="back" data-back="home">←</button><h2>Credit (Kadan)</h2></div>
+    <main>
+      <div class="card"><div class="lang-row" id="kadanLangRow"></div></div>
+      <div class="card" style="text-align:center;">
+        <div class="mic-wrap"><button class="mic small" id="kadanMic" style="width:90px;height:90px;font-size:32px;">🎙️</button></div>
+        <div class="mic-hint">Tap to speak — e.g. "Ramesh 500 rupees தக்காளி"</div>
+        <div class="field" style="text-align:left;margin-top:12px;"><label>Customer name</label><input type="text" id="kadanName"></div>
+        <div style="display:flex;gap:8px;">
+          <div class="field" style="flex:1;text-align:left;"><label>Amount ₹</label><input type="number" id="kadanAmount"></div>
+          <div class="field" style="flex:1;text-align:left;"><label>Product</label><input type="text" id="kadanProduct"></div>
+        </div>
+        <button class="btn btn-primary" id="kadanSaveBtn">Save Kadan Entry</button>
+      </div>
+      <div class="card">
+        <h3 style="font-size:14px;margin-bottom:6px;">Kadan Details</h3>
+        <div id="kadanList"></div>
+      </div>
+    </main>
+  </section>
+
+  <nav>
+    <div class="navwrap">
+      <button data-view="home" class="active"><span class="ic">🏠</span>Home</button>
+      <button data-view="voice"><span class="ic">🎙️</span>Voice</button>
+      <button data-view="bill"><span class="ic">🧾</span>Bill</button>
+      <button data-view="stockhub"><span class="ic">📦</span>Stock</button>
+      <button data-view="products"><span class="ic">🛒</span>Product</button>
+      <button data-view="credit"><span class="ic">📒</span>Credit</button>
+    </div>
+  </nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
